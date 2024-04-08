@@ -10,4 +10,4 @@ RUN npm run build
 # front 포트
 EXPOSE 5173
 # front 웹서버 실행
-CMD ["npm", "run", "dev"]
+ENTRYPOINT ["npm", "run", "dev"]
