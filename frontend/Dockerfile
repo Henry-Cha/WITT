@@ -6,8 +6,12 @@ COPY package.json .
 RUN npm install
 # 나머지 copy후 빌드
 COPY ./ ./
-RUN npm run build
+RUN npm run build || exit 1
+# 빌드된 애플리케이션 복사
+COPY --from=builder /app/dist /app/dist
+# serve 설치
+RUN npm install -g serve
 # front 포트
 EXPOSE 5173
 # front 웹서버 실행
-ENTRYPOINT ["npm", "run", "dev"]
+ENTRYPOINT ["serve", "-l", "5173", "-s", "dist"] 
