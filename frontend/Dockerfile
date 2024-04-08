@@ -7,6 +7,9 @@ RUN npm install
 # 나머지 copy후 빌드
 COPY ./ ./
 RUN npm run build || exit 1
+
+FROM node:20.11.1
+WORKDIR /app
 # 빌드된 애플리케이션 복사
 COPY --from=builder /app/dist /app/dist
 # serve 설치
