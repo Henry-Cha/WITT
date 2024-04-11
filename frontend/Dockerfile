@@ -1,26 +1,20 @@
-# nginx 이미지를 사용합니다. 뒤에 tag가 없으면 latest 를 사용합니다.
-FROM nginx:latest
- 
-# root 에 app 폴더를 생성
-RUN mkdir /app
- 
-# work dir 고정
+FROM node:20.11.1 as builder
+#컨테이너 내부 /app경로에서 작업 수행
 WORKDIR /app
- 
-# work dir 에 dist 폴더 생성 /app/dist
-RUN mkdir ./dist
- 
-# host pc의 현재경로의 dist 폴더를 workdir 의 dist 폴더로 복사
-ADD ./dist ./dist
- 
-# nginx 의 default.conf 를 삭제
-RUN rm /etc/nginx/conf.d/default.conf
- 
-# host pc 의 default.conf 를 아래 경로에 복사
-COPY ./default.conf /etc/nginx/conf.d
- 
-# 80 포트 오픈
-EXPOSE 80
- 
-# container 실행 시 자동으로 실행할 command. nginx 시작함
-CMD ["nginx", "-g", "daemon off;"]
+# 패키지 install 캐싱을 위해 먼저 copy
+COPY package.json .
+RUN npm install
+# 나머지 copy후 빌드
+COPY ./ ./
+RUN npm run build || exit 1
+
+FROM node:20.11.1
+WORKDIR /app
+# 빌드된 애플리케이션 복사
+COPY --from=builder /app/dist /app/dist
+# serve 설치
+RUN npm install -g serve
+# front 포트
+EXPOSE 5173
+# front 웹서버 실행
+ENTRYPOINT ["serve", "-l", "5173", "-s", "dist"] 
