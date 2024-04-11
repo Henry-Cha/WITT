@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -80,6 +81,7 @@ public class UserController implements UserControllerDocs {
             Long.valueOf(userDetails.getUsername()));
         return ResponseEntity.ok(feedCharacterResponse);
     }
+
 
     @GetMapping("/search")
     public ResponseEntity<ResultResponse> getUserList(

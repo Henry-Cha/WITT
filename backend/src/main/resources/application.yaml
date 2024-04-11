@@ -24,7 +24,7 @@ spring:
                         user-info-uri: https://kapi.kakao.com/v2/user/me
                         user-name-attribute: id
     profiles:
-        active: server
+        active: local
         include: key
     jpa:
         hibernate:
@@ -52,7 +52,8 @@ springdoc:
 
 jwt:
     issuer: ENC(14Ooqgf/y/yIGDkfqCyTKJy3LG9Fpb/d0SydS0en9673xiV1HfACnA==)
-    secret_key: ENC(7/o7yXVnICk0ep5F8NsM0MokqQtwmRYjDerggYrJ4OPZ4jnU8o7AjItfscf/bL/P)
+    secret_accesskey: ENC(7/o7yXVnICk0ep5F8NsM0MokqQtwmRYjDerggYrJ4OPZ4jnU8o7AjItfscf/bL/P)
+    secret_refreshkey: ENC(812uMgdp/iHEpvkJOffLxwUwBojNBXlHCkycsP+78sk=)
 
 ---
 spring:

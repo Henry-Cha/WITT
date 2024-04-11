@@ -62,7 +62,7 @@ public class WebOAuthSecurityConfig {
             // 요청 url 제한(모든 요청 허용)
             .authorizeRequests(authorizeRequests ->
                 authorizeRequests.requestMatchers("/user/**").authenticated()
-                    .anyRequest().permitAll())
+                .anyRequest().permitAll())
 
 //                authorizeRequests.anyRequest().permitAll())
             //                .requestMatchers("/api/token").permitAll()
