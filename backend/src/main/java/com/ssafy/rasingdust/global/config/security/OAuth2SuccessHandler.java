@@ -1,5 +1,6 @@
 package com.ssafy.rasingdust.global.config.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.rasingdust.domain.jwt.refreshtoken.entity.RefreshToken;
 import com.ssafy.rasingdust.domain.jwt.refreshtoken.repository.RefreshTokenRepository;
 import com.ssafy.rasingdust.domain.user.entity.User;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,16 +48,23 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String name = (String) properties.get("nickname");
         User user = userServiceImpl.findByUserName(name);
 
-        String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(user.getId(), refreshToken);
-        addRefreshTokenToCookie(request, response, refreshToken);
-
-//        String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
-//        String targetUrl = getTargetUrl(accessToken);
-
+        // 인증이 완료된 이휴 인증관련 속성 정리해주기
         clearAuthenticationAttributes(request, response);
 
-        getRedirectStrategy().sendRedirect(request, response, REDIRECT_PATH);
+        String refreshToken = tokenProvider.generateRefreshToken(user, REFRESH_TOKEN_DURATION);
+        String accessToken = tokenProvider.generateAccessToken(user, ACCESS_TOKEN_DURATION);
+        saveRefreshToken(user.getId(), refreshToken);
+        // refresh token은 쿠키로
+        addRefreshTokenToCookie(request, response, refreshToken);
+
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        // accessToken은 body로 전달
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+
+        // ObjectMapper를 사용하여 Map을 JSON으로 변환
+        new ObjectMapper().writeValue(response.getWriter(), tokens);
         log.info("deactivate SuccessHandler");
     }
 

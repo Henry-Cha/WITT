@@ -19,6 +19,11 @@ public enum ErrorCode {
 
     //토큰 관련
     USER_DEVELOP_TOKEN_CONFLICT(409, "이미 개발용 토큰이 존재하는 유저입니다."),
+    ACCESSTOKEN_DURATION_EXPIRED(401, "AccessToken이 만료되었습니다."),
+    REFRESHTOKEN_DURATION_EXPIRED(401, "RefreshToken이 만료되었습니다."),
+    INVAILED_ACCESSTOEKN(403, "유효하지 않은 AccessToken입니다."),
+    INVAILED_REFRESHTOKEN(403, "유효하지 않은 RefreshToken입니다."),
+
 
     //팔로우 관련
     FOLLOW_ALREADY_EXIST(3000, "이미 팔로잉 되어있는 회원입니다."),

@@ -23,15 +23,21 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Override
-    protected void doFilterInternal(    // client의 요청헤더의 jwt 토큰의 유효성 검사 및 인가 역할
-        HttpServletRequest request,
-        HttpServletResponse response,
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 //        System.out.println("come in jwt filter");
 
+        // 인증 API가 아닌경우 인증 로직을 거치지 않음
+        if (request.getRequestURI().startsWith("/api/problem")
+            || request.getRequestURI().startsWith("/api/token")
+            || request.getRequestURI().startsWith("/api/swagger-ui.html")
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // request에서 토큰 추출 ex) Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-        String authorizationHeader = request.getHeader(
-            HEADER_AUTHORIZATION);    // "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);    // "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
         String token = getAccessToken(authorizationHeader);
 
         LocalDateTime now = LocalDateTime.now();
@@ -40,12 +46,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         log.info("API 호출 시각 : {}", formattedTime);
         log.info("토큰 : {}", token);
         // 토큰 유효성 검사
-        if (tokenProvider.isValidToken(token)) {
+        if (tokenProvider.isValidAccessToken(token)) {
             Long userId = tokenProvider.getUserId(token);
             log.info("API 호출 유저 : {}", userId);
             // 인증서 발급
             Authentication authentication = tokenProvider.getAuthentication(token);
-            // spring security에 인증서 등록
+            // spring security에 인증객체 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 //        System.out.println("come out jwt filter");

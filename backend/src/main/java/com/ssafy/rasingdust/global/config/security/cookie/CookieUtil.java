@@ -16,6 +16,8 @@ public class CookieUtil {
     public static void addCookies(HttpServletResponse response, String name, String value, int maxAge) {
         log.info("쿠키생성");
         Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true); // HttpOnly 속성 설정 옵션
+        cookie.setSecure(true); // HTTPS 통신에서만 쿠키를 전송하도록 설정 옵션
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
